@@ -1,52 +1,52 @@
-const MainQuestions = [
+const mainQuestions = [
     {
         type: 'list',
-        name: 'choice',
+        name: 'mainMenu',
         message: 'What would you like to do?',
-        choices: ['View all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee role']
+        choices: ["View all departments", "View all roles", "View all employees", "Add a department", "Add a role", "Add an employee", "Update an employee role"]
     }
     
 ]
 
 const addDepartment = {
     type: 'input',
-    name: 'department_name',
+    name: 'name',
     message: 'What is the name of the department you want to add?'
 }
 
 const addRole = [{
     type: 'input',
-    name: 'role_name',
+    name: 'title',
     message: 'What is the name of the role you want to add?'
 },
 {
     type: 'number',
-    name: 'role_salary',
+    name: 'salary',
     message: 'What is the salary of the role you want to add?'
 },
 {
     type: 'list',
-    name: 'role_department_id',
+    name: 'department_id',
     message: 'What is the department id of the role you want to add?',
     choices: []
 }]
 
 const addEmployee = [{
     type: 'input',
-    name: 'employee_first',
+    name: 'first_name',
     message: 'What is the first name of the employee you want to add?'
 },{
     type: 'input',
-    name: 'employee_last',
+    name: 'last_name',
     message: 'What is the last name of the employee you want to add?'
 },{
     type: 'list',
-    name: 'employee_role_id',
+    name: 'role_id',
     message: 'What is the role id of the employee you want to add?',
     choices: []
 },{
     type: 'list',
-    name: 'employee_manager',
+    name: 'manager_id',
     message: 'Who is the employee\'s manager?',
     choices: []
 }]
@@ -62,3 +62,5 @@ const updateEmployee = [{
     message: 'What is the employee\'s new role',
     choices: []
 }]
+
+module.exports = {mainQuestions, addDepartment, addRole, addEmployee, updateEmployee};
