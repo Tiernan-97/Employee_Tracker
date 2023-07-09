@@ -1,7 +1,6 @@
 const inquirer = require("inquirer");
-const [employeeView, roleView, departmentView] = require("./db/queries.js")
-const {mainQuestions, addDepartment, addRole, addEmployee, updateEmployee} = require("./assets1/questions.js");
-const {getDepartments} = require("./db/Database.js");
+const [employeeView, roleView, departmentView] = require("./assets/queries.js")
+const {mainQuestions, addDepartment, addRole, addEmployee, updateEmployee} = require("./assets/questions.js");
 const mysql = require('mysql2');
 const db = mysql.createConnection(
     {
@@ -100,23 +99,97 @@ const doAddRole = () => {
 };
 
 const doAddEmployee = () => {
-    inquirer.prompt(addEmployee).then((answers) => {
-        db.query("INSERT INTO employee SET?", answers, (err, res) => {
-            if (err) throw err;
-            console.log("Employee added successfully");
-            runMenuQuestions();
-        });
-    });
+    return new Promise((resolve, reject) => {
+    db.query("SELECT * FROM role", (err,results) => {
+        if (err) {
+            reject(err);
+        }
+        resolve(results);
+    });})
+        .then((results) => {
+        const roleQ = addEmployee[2];
+        results.forEach((role) => {
+            roleQ.choices.push({
+                value: role.id,
+                name: role.title
+            })
+        })
+        })
+        .then(() => {
+            return new Promise((resolve, reject) => {
+                db.query("SELECT * FROM employee", (err,results) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(results);
+                })
+            });})
+            .then((results) => {
+                const managerQ = addEmployee[3];
+                results.forEach((manager) => {
+                    managerQ.choices.push({
+                        value: manager.id,
+                        name: manager.first_name + " " + manager.last_name
+                    })
+                });
+            })
+        .then(() => {
+            inquirer.prompt(addEmployee).then((answers) => {
+                
+                db.query("INSERT INTO employee SET?", answers, (err, res) => {
+                    if (err) throw err;
+                    console.log("Employee added successfully!");
+                    runMenuQuestions();
+                });
+            });
+        })
 };
 
 const doUpdateEmployee = () => {
-    inquirer.prompt(updateEmployee).then((answers) => {
-        db.query("UPDATE employee SET? WHERE?", [answers, answers], (err, res) => {
-            if (err) throw err;
-            console.table(res);
-            runMenuQuestions();
-        });
-    });
-};
+    return new Promise((resolve, reject) => {
+        db.query("SELECT * FROM employee", (err,results) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(results);
+        });})
+            .then((results) => {
+            const employeeQ = updateEmployee[0];
+            results.forEach((employee) => {
+                employeeQ.choices.push({
+                    value: employee.id,
+                    name: employee.first_name + " " + employee.last_name
+                })
+            })
+            })
+            .then(() => {
+                return new Promise((resolve, reject) => {
+                    db.query("SELECT * FROM role", (err,results) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        resolve(results);
+                    })
+                });})
+                .then((results) => {
+                    const roleQ = updateEmployee[1];
+                    results.forEach((role) => {
+                        roleQ.choices.push({
+                            value: role.id,
+                            name: role.title
+                        })
+                    });
+                })
+            .then(() => {
+                inquirer.prompt(updateEmployee).then((answers) => {
+                    console.log(answers);
+                    db.query("UPDATE employee SET role_id = ? WHERE id = ?", [answers.employee_role_id, answers.employee_id], (err, res) => {
+                        if (err) throw err;
+                        runMenuQuestions();
+                    });
+                });
+    
+            })
+        };
 
 runMenuQuestions();
