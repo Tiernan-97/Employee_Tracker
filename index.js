@@ -1,4 +1,5 @@
 const inquirer = require("inquirer");
+const [employeeView, roleView, departmentView] = require("./db/queries.js")
 const {mainQuestions, addDepartment, addRole, addEmployee, updateEmployee} = require("./assets1/questions.js");
 const {getDepartments} = require("./db/Database.js");
 const mysql = require('mysql2');
@@ -37,7 +38,7 @@ const runMenuQuestions = () => {
 };
 
 const viewAllDepartments = () => {
-    db.query("SELECT * FROM department", (err, res) => {
+    db.query(departmentView, (err, res) => {
         if (err) throw err;
         console.table(res);
         runMenuQuestions();
@@ -45,7 +46,7 @@ const viewAllDepartments = () => {
 };
 
 const viewAllRoles = () => {
-    db.query("SELECT * FROM role", (err, res) => {
+    db.query(roleView, (err, res) => {
         if (err) throw err;
         console.table(res);
         runMenuQuestions();
@@ -53,7 +54,7 @@ const viewAllRoles = () => {
 };
 
 const viewAllEmployees = () => {
-    db.query("SELECT * FROM employee", (err, res) => {
+    db.query(employeeView, (err, res) => {
         if (err) throw err;
         console.table(res);
         runMenuQuestions();
@@ -85,7 +86,9 @@ const doAddRole = () => {
                 value: dept.id,
                 name: dept.name
             })
-
+        })
+        })
+        .then(() => {
             inquirer.prompt(addRole).then((answers) => {
                 db.query("INSERT INTO role SET?", answers, (err, res) => {
                     if (err) throw err;
@@ -94,10 +97,6 @@ const doAddRole = () => {
                 });
             });
         })
-    })
-
-
-    
 };
 
 const doAddEmployee = () => {
